@@ -13,15 +13,7 @@ $me = new Ldap();
 $me->load_config();
 //$me = get_plugin_data($plugin_id);
 
-$template->assign('HOST', 	$me->config['host']);
-$template->assign('BASEDN',	$me->config['basedn']); // racine !
-$template->assign('PORT', 	$me->config['port']);
-$template->assign('LD_ATTR',	$me->config['ld_attr']);
-$template->assign('LD_GROUP',	$me->config['ld_group']);
-$template->assign('LD_USE_SSL',	$me->config['ld_use_ssl']);
-$template->assign('LD_BINDPW',	$me->config['ld_bindpw']);
-$template->assign('LD_BINDDN',	$me->config['ld_binddn']);
-
+// Save LDAP configuration when submitted
 if (isset($_POST['save'])){
 	$me->config['host'] 	 = $_POST['HOST'];
 	$me->config['basedn']    = $_POST['BASEDN'];
@@ -36,10 +28,7 @@ if (isset($_POST['save'])){
 	} else {
 		$me->config['ld_use_ssl'] = False;
 	}
-}
 
-// Save LDAP configuration
-if (isset($_POST['save'])){
 	$me->save_config();
 }
 
@@ -70,6 +59,16 @@ if (isset($_POST['check_ldap'])){
 		$template->assign('LD_CHECK_LDAP','<p style="color:red;">Error : '.$error.' for binding on server '.$me->config['uri'].' for user '.$_POST['USERNAME'].', check your binding!</p>');
 	}
 }
+
+// And build up the form with the new values
+$template->assign('HOST', 	$me->config['host']);
+$template->assign('BASEDN',	$me->config['basedn']); // racine !
+$template->assign('PORT', 	$me->config['port']);
+$template->assign('LD_ATTR',	$me->config['ld_attr']);
+$template->assign('LD_GROUP',	$me->config['ld_group']);
+$template->assign('LD_USE_SSL',	$me->config['ld_use_ssl']);
+$template->assign('LD_BINDPW',	$me->config['ld_bindpw']);
+$template->assign('LD_BINDDN',	$me->config['ld_binddn']);
 
 $template->assign_var_from_handle( 'ADMIN_CONTENT', 'plugin_admin_content');
 ?>
