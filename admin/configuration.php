@@ -53,7 +53,7 @@ if (isset($_POST['check_ldap'])){
 	$error=$me->check_ldap();
 	if($error==1 && $username) {
 		if ($me->ldap_bind_as($username,$_POST['PASSWORD'])){
-			if($me->check_ldap_group_membership($username,$me->config['ld_group'])){
+			if($me->check_ldap_group_membership($username,$_POST['USERNAME'])){
 	                        $template->assign('LD_CHECK_LDAP','<p style="color:green;">Configuration LDAP OK : '.$username.'</p>');
 			} else {
 				$template->assign('LD_CHECK_LDAP','<p style="color:orange;">Credentials OK, Check GroupMembership for: '.$username.'</p>');

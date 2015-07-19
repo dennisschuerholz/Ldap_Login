@@ -125,11 +125,6 @@ class Ldap {
                 return ldap_err2str(ldap_errno($this->cnx));
         }
 	
-	// return the name ldap understand
-	public function ldap_name($name){
-		return $this->config['ld_attr'].'='.$name.','.$this->config['basedn'];
-	}
-	
 	// authentication public
 	public function ldap_bind_as($user,$user_passwd){
 		$this->write_log("[function]> ldap_bind_as");
@@ -152,18 +147,20 @@ class Ldap {
 		return false;
 	}
 	
-	public function ldap_mail($name){
-		//echo $this->cnx;
-		//echo $this->ldap_name($name);
-		$sr=@ldap_read($this->cnx, $this->ldap_name($name), "(objectclass=*)", array('mail'));
+	public function ldap_get_email($user_dn){
+		$sr=@ldap_read($this->cnx, $user_dn, "(objectclass=*)", array('mail'));
 		$entry = @ldap_get_entries($this->cnx, $sr);
 		
 		if (!empty($entry[0]['mail'])) {
 			return $entry[0]['mail'][0];
-			}
-		return False;
+		}
+		return null;
 	}
 	
+	public function ldap_get_user_email($username) {
+		return $this->ldap_email($this->ldap_get_dn($username));
+	}
+
 	// return userdn (and username) for authentication
 	public function ldap_search_dn($value_to_search){
 		$this->write_log("[function]> ldap_search_dn(".$value_to_search.")");
@@ -205,8 +202,9 @@ class Ldap {
 	}
 
 	// look for LDAP group membership
-	public function check_ldap_group_membership($user_dn,$group_dn){
-		$this->write_log("[function]> check_ldap_group_membership(".$user_dn."   ,   ".$group_dn.")");
+	public function check_ldap_group_membership($user_dn, $user_login){
+		$group_dn = $this->config['ld_group'];
+		$this->write_log("[function]> check_ldap_group_membership('$user_dn', '$group_dn', '$user_login')");
 		//if no group specified return true
 		if(!$group_dn){
 			return true;	
@@ -219,22 +217,17 @@ class Ldap {
                         $this->write_log("[check_ldap_group_membership]> Cannot bind to server!");
                         return false;
                 }
-		// search for all memberOf-attributes for a given user_dn
-		$this->write_log("[check_ldap_group_membership]> @ldap_search(\$this->cnx,\"".$user_dn."\",\"(objectClass=*)\", array(\"memberOf\"),0,1)");
-		if($search = @ldap_search($this->cnx, $user_dn, "(objectClass=*)", array("memberOf"),0,1)){
+		// search for all member and memberUid attributes for a group_dn
+		$search_filter = "(|(&(objectClass=posixGroup)(memberUid=$user_login))(&(objectClass=group)(member=$user_dn)))";
+		$this->write_log("[check_ldap_group_membership]> @ldap_search(\$this->cnx,'$group_dn', '$search_filter', array('memberOf'),0,1)");
+		if($search = @ldap_search($this->cnx, $group_dn, $search_filter, array("dn"),0,1)){
 			$entry = @ldap_get_entries($this->cnx, $search);
-			//check if there are memberof-attributes
-			if(isset($entry[0]["memberof"])){
-				$this->write_log("[check_ldap_group_membership]> Found ". $entry[0]["memberof"]["count"] ." memberOf-attributes");
-       		        	for($i=0; $i < $entry["0"]["memberof"]["count"]; $i++){
-        	        	        $this->write_log("[check_ldap_group_membership]> checking: ". $entry["0"]["memberof"][$i]);
-					if(strcmp($group_dn,$entry["0"]["memberof"][$i]) == 0){
-						$this->write_log("[check_ldap_group_membership]> Match found for \"". $group_dn ."\" AND \"".$entry["0"]["memberof"][$i]."\"");
-						return true;
-					}
-				}
+			//check if there are dn-attributes
+			if (!empty($entry[0]["dn"])) {
+				$this->write_log("[check_ldap_group_membership]> match found: ".$entry[0]["dn"]);
+				return true;
 			} else {
-				$this->write_log("[check_ldap_group_membership]> No groups found for given user, check on ldap side");
+				$this->write_log("[check_ldap_group_membership]> no group membership for user found for given group and user, check on ldap side");
 			}
 		} else {
 			$this->write_log("[check_ldap_group_membership]> ldap_search NOT successfull: " .$this->getErrorString());

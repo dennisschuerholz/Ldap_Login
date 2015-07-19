@@ -61,10 +61,13 @@ function login($success, $username, $password, $remember_me){
 	$obj->load_config();
 	$obj->ldap_conn() or die("Unable to connect LDAP server : ".$ldap->getErrorString());
 
-	//if (!$obj->ldap_bind_as($username,$password)){ // bind with userdn
-	if (!$obj->ldap_search_dn($username) || !$obj->ldap_bind_as($obj->ldap_search_dn($username),$password)){ // bind with userdn
+	$user_dn = $obj->ldap_search_dn($username);	// retrieve the userdn
+
+	// If we have userdn, attempt to login an check user's group access
+	if (!($user_dn && !$obj->ldap_bind_as($user_dn,$password) &&
+		check_ldap_group_membership($user_dn, $username))) {
 		trigger_notify('login_failure', stripslashes($username));
-		return false; // wrong password
+		return false; // wrong user/password or no group access
 	}
 
 	// search user in piwigo database
@@ -84,24 +87,19 @@ function login($success, $username, $password, $remember_me){
 		// this is where we check we are allowed to create new users upon that.
 		if ($obj->config['allow_newusers']) {
 			
-			// we got the email address
-			if ($obj->ldap_mail($username)) {
-				$mail = $obj->ldap_mail($username);
-			}
-			else {
-				$mail = NULL;
-			}
-			
-			// we actually register the new user
+			// retrieve LDAP e-mail address and create a new user
+			$mail = $obj->ldap_get_email($user_dn);
 			$new_id = register_user($username,random_password(8),$mail);
-                        
-			// now we fetch again his id in the piwigo db, and we get them, as we just created him !
-			//$query = 'SELECT '.$conf['user_fields']['id'].' AS id FROM '.USERS_TABLE.' WHERE '.$conf['user_fields']['username'].' = \''.pwg_db_real_escape_string($username).'\' ;';
-			//$row = pwg_db_fetch_assoc(pwg_query($query));
 
+			// Login user
 			log_user($new_id, False);
 			trigger_notify('login_success', stripslashes($username));
-			redirect('profile.php');
+
+			// in case the e-mail address is empty, redirect to profile page
+			if($mail==NULL) {
+				redirect('profile.php');
+			}
+
 			return true;
 		}
 		// else : this is the normal behavior ! user is not created.
