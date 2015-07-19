@@ -167,7 +167,7 @@ class Ldap {
 	// return userdn (and username) for authentication
 	public function ldap_search_dn($value_to_search){
 		$this->write_log("[function]> ldap_search_dn(".$value_to_search.")");
-		$filter = '(&(objectCategory=person)('.$this->config['ld_attr'].'='.$value_to_search.'))';
+		$filter = '(&(objectClass=person)('.$this->config['ld_attr'].'='.$value_to_search.'))';
 
 		// connection handling
 		$this->write_log("[ldap_search_dn]> Connecting to server");
