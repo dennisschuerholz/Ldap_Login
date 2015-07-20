@@ -64,8 +64,8 @@ function login($success, $username, $password, $remember_me){
 	$user_dn = $obj->ldap_search_dn($username);	// retrieve the userdn
 
 	// If we have userdn, attempt to login an check user's group access
-	if (!($user_dn && !$obj->ldap_bind_as($user_dn,$password) &&
-		check_ldap_group_membership($user_dn, $username))) {
+	if (!($user_dn && $obj->ldap_bind_as($user_dn,$password) &&
+		$obj->check_ldap_group_membership($user_dn, $username))) {
 		trigger_notify('login_failure', stripslashes($username));
 		return false; // wrong user/password or no group access
 	}
