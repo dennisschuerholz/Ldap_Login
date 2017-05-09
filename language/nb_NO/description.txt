@@ -1,0 +1,1 @@
+tillate å logge inn Piwigo brukere med sin ldap legitimasjon (innlogging, mail, eller en annen egenskap som er spesifisert av Piwigo admins + LDAP-passord).

@@ -1,0 +1,1 @@
+Sta Piwigo gebruikers toe in te loggen met hun Idap referenties (login, mail of een ander kenmerk zoals gespecificeerd door Piwigo beheerders + Idap wachtwoord).

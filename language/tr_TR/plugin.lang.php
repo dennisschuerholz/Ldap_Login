@@ -35,9 +35,7 @@ $lang['Ldap_Login Test'] = 'Ldap Oturum Açma Test';
 $lang['Ldap_Login configuration'] = 'Ldap Oturum Açma Yapılandırma';
 $lang['Ldap server host connection'] = 'LDAP sunucu bağlantısı';
 $lang['Ldap server host'] = 'LDAP sunucusu barındırıcı';
-$lang['Ldap filter :'] = 'LDAP filtresi:';
 $lang['Ldap port'] = 'LDAP portu';
-$lang['Ldap attributes'] = 'LDAP öz nitelikleri';
 $lang['Bind password'] = 'Bağlı şifre';
 $lang['Attribute corresponding to the user name'] = 'Kullanıcı adına karşılık gelen öz nitelik';
 $lang['All LDAP users can use their ldap password everywhere on piwigo if needed.'] = 'Gerektiğinde tüm LDAP kullanıcıları Piwigo üzerinde LDAP şifrelerini kullanabilir.';
@@ -48,4 +46,5 @@ $lang['New users when ldap auth is successfull'] = 'Yeni kullanıcılar - LDAP k
 $lang['Do you want admins to be advertised by mail in case of new users creation upon ldap login ?'] = 'Yöneticiler, LDAP oturumu açıldığında yeni kullanıcı yaratma durumundan eposta yoluyla bilgilendirilsin mi?';
 $lang['Do you allow new piwigo users to be created when users authenticate succesfully on the ldap ?'] = 'Yeni kullanıcılar LDAP ile başarılı kimlik doğrulaması yaptıklarında yaratılsın mı?';
 $lang['Do you want to send mail to the new users, like casual piwigo users receive ?'] = 'Yeni kullanıcılar diğer Piwigo kullanıcıları gibi eposta alsın mı?';
-?>
+$lang['Ldap groups'] = 'LDAP grupları';
+$lang['Ldap users'] = 'LDAP kullanıcıları';
