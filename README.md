@@ -18,3 +18,10 @@ LDAP authentication plugin for piwigo with user-group support
 **Bind passwort**: mysecret123</br>
 </br>
 _--> SAVE and enjoy :)_
+
+## Credits
+
+Original version by [22decembre](http://piwigo.org/dev/browser/extensions/Ldap_Login)
+Forked by [f1dot4 on Github](https://github.com/f1dot4/Ldap_Login) and [Frederik Lindenaar on his private GitLab](https://gitlab.lindenaar.net/piwigo/Ldap_Login)
+Now further development by [Dennis Schürholz](https://github.com/dennisschuerholz) and [Jan-Frederik Rieckers](https://github.com/janfred/) is going on
+
